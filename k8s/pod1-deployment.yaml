@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-registration-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: gateway-registration }
+  template:
+    metadata:
+      labels: { app: gateway-registration }
+    spec:
+      containers:
+        - name: api-gateway
+          image: api-gateway:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REGISTRATION_URL
+              value: "http://localhost:8081"
+            - name: DELETE_URL
+              value: "http://delete-service:8082"
+        - name: registration-service
+          image: registration-service:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8081
+          env:
+            - { name: DB_HOST, value: "mysql" }
+            - { name: DB_USER, value: "root" }
+            - { name: DB_PASSWORD, value: "rootpass" }
+            - { name: DB_NAME, value: "college" }
